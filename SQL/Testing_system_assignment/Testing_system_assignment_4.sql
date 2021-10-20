@@ -51,13 +51,13 @@ GROUP BY	e.question_id
 
 -- 6. Thông kê mỗi category Question được sử dụng trong bao nhiêu Question
 
-SELECT	c.category_name,
-		c.category_id,
-        COUNT(c.category_id) solan
-FROM	category_questions c
+SELECT	cq.category_name,
+		cq.category_id,
+        COUNT(cq.category_id) so_luong
+FROM	category_questions cq
 LEFT JOIN	questions q
-	ON	c.category_id = q.category_id
-GROUP BY	c.category_id;
+	ON	cq.category_id = q.category_id
+GROUP BY	cq.category_id;
 
  
 -- 7. Thông kê mỗi Question được sử dụng trong bao nhiêu Exam 
@@ -87,12 +87,11 @@ GROUP BY	q.question_id
 -- 9. Thống kê số lượng account trong mỗi group  
     
 SELECT	g.group_name,
-        COUNT(ga.group_id) so_accounts
+        COUNT(ga.account_id) so_accounts
 FROM	group_accounts ga
 RIGHT JOIN	`groups` g
 	ON	ga.group_id = g.group_id
-WHERE	ga.group_id IS NULL OR ga.group_id IS NOT NULL
-GROUP BY	g.group_name
+GROUP BY	g.group_id
 ORDER BY	COUNT(ga.group_id) DESC;
 
 -- 10. Tìm chức vụ có ít người nhất  
@@ -111,7 +110,7 @@ GROUP BY	a.position_id
 
 -- 11. Thống kê mỗi phòng ban có bao nhiêu dev, test, scrum master, PM  
 
-SELECT	d.department_name;
+
 		
 
 -- 12. Lấy thông tin chi tiết của câu hỏi bao gồm: thông tin cơ bản của
@@ -164,4 +163,41 @@ FROM	questions q
 LEFT JOIN	answers a
 	ON	q.question_id = a.question_id
 WHERE	a.question_id IS NULL;
+
+-- 17. a)	Lấy các account thuộc group_id = 1 
+-- 	b)	Lấy các account thuộc group_id = 2 
+-- 	c)	Ghép 2 kết quả từ câu a) và câu b) sao cho không có record nào trùng nhau 
+
+SELECT	a.account_id
+FROM	`accounts` a
+LEFT JOIN	group_accounts ga
+	ON	a.account_id = ga.account_id
+WHERE	ga.group_id = 1
+UNION
+SELECT	a.account_id
+FROM	`accounts` a
+LEFT JOIN	group_accounts ga
+	ON	a.account_id = ga.account_id
+WHERE	ga.group_id = 3;
+	
+-- 18. a)	Lấy các group có lớn hơn 5 thành viên 
+-- 	b)	Lấy các group có nhỏ hơn 7 thành viên 
+-- 	c)	Ghép 2 kết quả từ câu a) và câu b) 
+
+SELECT	g.group_name,
+		COUNT(ga.group_id) so_nhan_vien
+FROM	group_accounts ga
+LEFT JOIN	`groups` g
+	ON	g.group_id = ga.group_id
+GROUP BY g.group_name
+	HAVING	COUNT(ga.group_id) >= 2
+UNION ALL
+SELECT	g.group_name,
+		COUNT(ga.group_id) so_nhan_vien
+FROM	group_accounts ga
+LEFT JOIN	`groups` g
+	ON	g.group_id = ga.group_id
+GROUP BY g.group_name
+	HAVING	COUNT(ga.group_id) < 5	
+
 
