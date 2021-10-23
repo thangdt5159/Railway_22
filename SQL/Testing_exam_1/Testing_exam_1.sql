@@ -108,15 +108,14 @@ SELECT	ban_hang();
 
 DROP PROCEDURE IF EXISTS xoa_don_hang;
 DELIMITER //
-CREATE PROCEDURE xoa_don_hang (OUT so_ban_ghi_da_xoa TINYINT)
+CREATE PROCEDURE xoa_don_hang ()
 	BEGIN
-		SELECT COUNT(*) INTO so_ban_ghi_da_xoa FROM car_orders WHERE `status` = '2' AND YEAR(order_date) < YEAR(NOW());
+		SELECT COUNT(*) FROM car_orders WHERE `status` = '2' AND YEAR(order_date) < YEAR(NOW());
         DELETE FROM	car_orders WHERE `status` = '2' AND YEAR(order_date) < YEAR(NOW());
 	END//
 DELIMITER ;
 
-CALL xoa_don_hang(@so_ban_ghi_da_xoa);
-SELECT @so_ban_ghi_da_xoa;
+CALL xoa_don_hang();
 
 -- 5. Viết 1 thủ tục (có CustomerID parameter) để in ra thông tin của các đơn
 -- hàng đã đặt hàng bao gồm: tên của khách hàng, mã đơn hàng, số lượng oto và tên hãng sản xuất.   
